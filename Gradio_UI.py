@@ -110,13 +110,18 @@ def pull_messages_from_step(
 
         # Calculate duration and token information
         step_footnote = f"{step_number}"
-        if hasattr(step_log, "input_token_count") and hasattr(step_log, "output_token_count"):
+        if (
+            hasattr(step_log, "input_token_count")
+            and step_log.input_token_count is not None
+            and hasattr(step_log, "output_token_count")
+            and step_log.output_token_count is not None
+        ):
             token_str = (
                 f" | Input-tokens:{step_log.input_token_count:,} | Output-tokens:{step_log.output_token_count:,}"
             )
             step_footnote += token_str
-        if hasattr(step_log, "duration"):
-            step_duration = f" | Duration: {round(float(step_log.duration), 2)}" if step_log.duration else None
+        if hasattr(step_log, "duration") and step_log.duration is not None:
+            step_duration = f" | Duration: {round(float(step_log.duration), 2)}"
             step_footnote += step_duration
         step_footnote = f"""<span style="color: #bbbbc2; font-size: 12px;">{step_footnote}</span> """
         yield gr.ChatMessage(role="assistant", content=f"{step_footnote}")

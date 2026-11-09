@@ -1,4 +1,4 @@
-# First Agent Template
+# First Agent
 
 A lightweight local agent starter built with `smolagents`, `LiteLLMModel`, and a Gradio chat interface. It is configured to run against a local Ollama model instead of a hosted Hugging Face model, which makes it easy to develop and test an agent entirely on your machine.
 
@@ -62,6 +62,16 @@ pip install -r requirements.txt
 
 ### 5) Run the app
 
+The project now supports either Ollama or a free Hugging Face model.
+
+Using the included launcher script:
+
+```bash
+./run_app.sh
+```
+
+Or run directly:
+
 ```bash
 python app.py
 ```
@@ -76,29 +86,43 @@ The Gradio app will print a local URL in the terminal. Open it in your browser t
 
 ## Configuration
 
-The app uses these defaults in `app.py`:
+The app supports two modes:
 
-```python
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2:7b")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-```
+- `ollama` for local models
+- `huggingface` for free Hugging Face inference models
 
-This means the model is created as:
-
-```python
-model = LiteLLMModel(
-    model_id=f"ollama/{OLLAMA_MODEL}",
-    api_base=OLLAMA_BASE_URL,
-    api_key="ollama",
-)
-```
-
-Override them as needed:
+The defaults are:
 
 ```bash
+export MODEL_MODE=huggingface
+export HF_MODEL=Qwen/Qwen2.5-1.5B-Instruct
+export HF_TOKEN=""
 export OLLAMA_MODEL=qwen2:7b
 export OLLAMA_BASE_URL=http://localhost:11434
-python app.py
+```
+
+Use a Hugging Face model:
+
+```bash
+export MODEL_MODE=huggingface
+export HF_MODEL=Qwen/Qwen2.5-1.5B-Instruct
+export HF_TOKEN=your_hf_token_here
+./run_app.sh
+```
+
+Use Ollama instead:
+
+```bash
+export MODEL_MODE=ollama
+export OLLAMA_MODEL=qwen2:7b
+export OLLAMA_BASE_URL=http://localhost:11434
+./run_app.sh
+```
+
+Only free/open models should be used by default. The recommended default Hugging Face model is:
+
+```text
+Qwen/Qwen2.5-1.5B-Instruct
 ```
 
 ## Verified local run example

@@ -35,18 +35,59 @@ def get_current_time_in_timezone(timezone: str) -> str:
         return f"Error fetching time for timezone '{timezone}': {str(e)}"
 
 
-final_answer = FinalAnswerTool()
-
-# Use a local Ollama model by default. Set OLLAMA_MODEL or OLLAMA_BASE_URL to override.
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2:7b")
+FREE_HF_MODELS = {
+    "ollama": "qwen2:7b",
+    "huggingface": "Qwen/Qwen2.5-1.5B-Instruct",
+}
+DEFAULT_MODE = os.getenv("MODEL_MODE", "ollama").lower()
+DEFAULT_HF_MODEL = os.getenv("HF_MODEL", FREE_HF_MODELS["huggingface"])
+DEFAULT_OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", FREE_HF_MODELS["ollama"])
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+HF_TOKEN = os.getenv("HF_TOKEN", "")
 
+
+def get_model_config():
+    mode = os.getenv("MODEL_MODE", DEFAULT_MODE).lower()
+    if mode not in {"ollama", "huggingface"}:
+        mode = "ollama"
+
+    if mode == "huggingface":
+        model_name = os.getenv("HF_MODEL", DEFAULT_HF_MODEL).strip()
+        if model_name.startswith("huggingface/"):
+            model_name = model_name.replace("huggingface/", "", 1)
+        if model_name.startswith("http://") or model_name.startswith("https://"):
+            full_model_id = model_name
+        else:
+            full_model_id = f"huggingface/{model_name}"
+
+        return {
+            "provider": "huggingface",
+            "model_id": full_model_id,
+            "api_base": None,
+            "api_key": HF_TOKEN,
+            "max_tokens": 2048,
+            "temperature": 0.5,
+        }
+
+    model_name = os.getenv("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL)
+    return {
+        "provider": "ollama",
+        "model_id": f"ollama/{model_name}",
+        "api_base": OLLAMA_BASE_URL,
+        "api_key": "ollama",
+        "max_tokens": 2048,
+        "temperature": 0.5,
+    }
+
+
+final_answer = FinalAnswerTool()
+model_config = get_model_config()
 model = LiteLLMModel(
-    model_id=f"ollama/{OLLAMA_MODEL}",
-    api_base=OLLAMA_BASE_URL,
-    api_key="ollama",
-    max_tokens=2096,
-    temperature=0.5,
+    model_id=model_config["model_id"],
+    api_base=model_config["api_base"],
+    api_key=model_config["api_key"],
+    max_tokens=model_config["max_tokens"],
+    temperature=model_config["temperature"],
     custom_role_conversions=None,
 )
 
@@ -70,4 +111,5 @@ agent = CodeAgent(
 )
 
 
-GradioUI(agent).launch()
+if __name__ == "__main__":
+    GradioUI(agent).launch()

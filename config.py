@@ -1,7 +1,4 @@
 import os
-import datetime
-
-import pytz
 
 FREE_HF_MODELS = {
     "ollama": "qwen2:7b",
@@ -47,13 +44,3 @@ def get_model_config():
         "max_tokens": 2048,
         "temperature": 0.5,
     }
-
-
-def get_current_time_in_timezone(timezone: str) -> str:
-    """Fetch the current local time in a specified timezone."""
-    try:
-        tz = pytz.timezone(timezone)
-        local_time = datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
-        return f"The current local time in {timezone} is: {local_time}"
-    except Exception as exc:
-        return f"Error fetching time for timezone '{timezone}': {str(exc)}"

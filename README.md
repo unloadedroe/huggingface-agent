@@ -47,6 +47,37 @@ ollama pull qwen2:7b
 
 You can change the model later with the `OLLAMA_MODEL` environment variable.
 
+### Stop or suspend Ollama
+
+To stop the service without sudo:
+
+```bash
+systemctl stop ollama
+```
+
+If your user account does not have permission, run it with sudo:
+
+```bash
+sudo systemctl stop ollama
+sudo systemctl status ollama
+```
+
+To disable it and stop it immediately:
+
+```bash
+sudo systemctl disable --now ollama.service
+```
+
+This is the working pattern that was used during local testing:
+
+```bash
+systemctl stop ollama
+# Access denied without sudo
+sudo systemctl stop ollama
+sudo systemctl status ollama
+sudo systemctl disable --now ollama.service
+```
+
 ### 3) Create and activate a Python environment
 
 ```bash
@@ -220,6 +251,27 @@ ollama list
 ### Token-count errors in Gradio
 
 This repo includes a safe guard against missing token metadata from local models. If your Ollama model does not report token counts, the app should still run without crashing.
+
+### Managing the Ollama service
+
+When you need to stop the local inference service, use:
+
+```bash
+systemctl stop ollama
+```
+
+If that fails due to permissions, use:
+
+```bash
+sudo systemctl stop ollama
+sudo systemctl status ollama
+```
+
+To fully disable it and stop it immediately:
+
+```bash
+sudo systemctl disable --now ollama.service
+```
 
 ## Notes
 

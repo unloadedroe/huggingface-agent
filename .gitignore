@@ -1,0 +1,50 @@
+# Python virtual environments
+.env/
+venv/
+env/
+.venv/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local run artifacts
+.gradio/
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Coverage/test reports
+.coverage
+.coverage.*
+htmlcov/
+
+# Local data
+*.sqlite3
+*.db
